@@ -905,12 +905,3 @@ private struct ChecklistItem: View {
     }
 }
 
-class MedicationNotificationManager: ObservableObject {
-    func scheduleNotifications(for medications: [Medication]) {
-        // Implementation to schedule notifications
-    }
-}
-
-struct Medication: Codable {
-    // Medication properties
-}
