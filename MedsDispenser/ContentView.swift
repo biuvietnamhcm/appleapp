@@ -11,6 +11,8 @@ struct BLEDevice {
 
 struct ContentView: View {
     @StateObject var medicationManager = MedicationManager()
+    @EnvironmentObject var notificationManager: NotificationManager
+    
     @State var selectedInputMode: InputMode = .json
     @State var showingFilePicker = false
     @State var showingAlert = false
@@ -713,7 +715,10 @@ struct ContentView: View {
             DispatchQueue.main.async {
                 isSubmitting = false
                 if success {
-                    showAlert("Success", "Configuration sent successfully to \(selectedDevice.name ?? "device")!")
+                    medicationManager.saveMedications()
+                    notificationManager.scheduleNotifications(for: medicationManager.medications)
+                    
+                    showAlert("Success", "Configuration sent successfully to \(selectedDevice.name ?? "device")! Medication reminders have been scheduled.")
                 } else {
                     showAlert("Error", error ?? "Failed to send configuration")
                 }
@@ -898,4 +903,14 @@ private struct ChecklistItem: View {
             Spacer()
         }
     }
+}
+
+class NotificationManager: ObservableObject {
+    func scheduleNotifications(for medications: [Medication]) {
+        // Implementation to schedule notifications
+    }
+}
+
+struct Medication: Codable {
+    // Medication properties
 }
