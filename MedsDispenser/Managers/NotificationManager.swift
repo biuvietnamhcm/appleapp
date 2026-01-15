@@ -1,9 +1,10 @@
 import Foundation
 import UserNotifications
 import SwiftUI
+import Combine
 
-class NotificationManager: NSObject, ObservableObject, UNUserNotificationCenterDelegate {
-    static let shared = NotificationManager()
+final class MedicationNotificationManager: NSObject, ObservableObject {
+    static let shared = MedicationNotificationManager()
     
     @Published var pendingNotification: PendingNotificationInfo?
     @Published var isShowingNotificationDetail = false
@@ -17,7 +18,7 @@ class NotificationManager: NSObject, ObservableObject, UNUserNotificationCenterD
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { granted, error in
             DispatchQueue.main.async {
                 if let error = error {
-                    print("❌ Notification authorization error: \(error.localizedDescription)")
+                    print("Notification authorization error: \(error.localizedDescription)")
                 }
                 completion(granted)
             }
@@ -34,12 +35,12 @@ class NotificationManager: NSObject, ObservableObject, UNUserNotificationCenterD
             }
         }
         
-        print("📅 Scheduled notifications for \(medications.count) medications")
+        print("Scheduled notifications for \(medications.count) medications")
     }
     
     private func scheduleNotification(for medication: Medication, schedule: Schedule) {
         let content = UNMutableNotificationContent()
-        content.title = "💊 Time for your medication"
+        content.title = "Time for your medication"
         content.body = "\(medication.type) - \(schedule.dosage)"
         content.sound = .default
         content.badge = 1
@@ -59,7 +60,7 @@ class NotificationManager: NSObject, ObservableObject, UNUserNotificationCenterD
         guard timeComponents.count == 2,
               let hour = Int(timeComponents[0]),
               let minute = Int(timeComponents[1]) else {
-            print("❌ Invalid time format: \(schedule.time)")
+            print("Invalid time format: \(schedule.time)")
             return
         }
         
@@ -77,9 +78,9 @@ class NotificationManager: NSObject, ObservableObject, UNUserNotificationCenterD
         
         UNUserNotificationCenter.current().add(request) { error in
             if let error = error {
-                print("❌ Failed to schedule notification: \(error.localizedDescription)")
+                print("Failed to schedule notification: \(error.localizedDescription)")
             } else {
-                print("✅ Scheduled notification for \(medication.type) at \(schedule.time)")
+                print("Scheduled notification for \(medication.type) at \(schedule.time)")
             }
         }
     }
@@ -87,11 +88,12 @@ class NotificationManager: NSObject, ObservableObject, UNUserNotificationCenterD
     func cancelAllNotifications() {
         UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
         UNUserNotificationCenter.current().removeAllDeliveredNotifications()
-        print("🗑️ Cancelled all notifications")
+        print("Cancelled all notifications")
     }
-    
-    // MARK: - UNUserNotificationCenterDelegate
-    
+}
+
+// MARK: - UNUserNotificationCenterDelegate
+extension MedicationNotificationManager: UNUserNotificationCenterDelegate {
     // Handle notification when app is in foreground
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
         // Show banner and play sound even when app is in foreground

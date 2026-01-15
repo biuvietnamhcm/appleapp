@@ -11,7 +11,7 @@ struct BLEDevice {
 
 struct ContentView: View {
     @StateObject var medicationManager = MedicationManager()
-    @EnvironmentObject var notificationManager: NotificationManager
+    @EnvironmentObject var notificationManager: MedicationNotificationManager
     
     @State var selectedInputMode: InputMode = .json
     @State var showingFilePicker = false
@@ -905,7 +905,7 @@ private struct ChecklistItem: View {
     }
 }
 
-class NotificationManager: ObservableObject {
+class MedicationNotificationManager: ObservableObject {
     func scheduleNotifications(for medications: [Medication]) {
         // Implementation to schedule notifications
     }

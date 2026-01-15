@@ -3,7 +3,7 @@ import SwiftUI
 @main
 struct MedsDispenserApp: App {
     @State private var showIntro = true
-    @StateObject private var notificationManager = NotificationManager.shared
+    @StateObject private var notificationManager = MedicationNotificationManager.shared
     
     var body: some Scene {
         WindowGroup {
@@ -19,7 +19,7 @@ struct MedsDispenserApp: App {
                             }
                             
                             notificationManager.requestAuthorization { granted in
-                                print("📱 Notification permission: \(granted ? "granted" : "denied")")
+                                print("Notification permission: \(granted ? "granted" : "denied")")
                             }
                         }
                 } else {
